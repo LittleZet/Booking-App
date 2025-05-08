@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Facility Booking</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Facility Booking</h1>
+
+  <form method="POST" action="/login">
+    <input type="email" name="email" placeholder="Enter email">
+    <button type="submit">Login</button>
+  </form>
+
+  <form method="POST" action="/book">
+    <input type="email" name="email" placeholder="Your email">
+    <input type="datetime-local" name="start">
+    <input type="datetime-local" name="end">
+    <button type="submit">Book</button>
+  </form>
+
+  <h2>Current Bookings:</h2>
+  <ul>
+    {% for b in bookings %}
+      <li>
+        {{ b.start_time }} - {{ b.end_time }} | {{ b.email }}
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
