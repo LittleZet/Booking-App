@@ -26,7 +26,7 @@ class Booking(db.Model):
 def index():
     user = request.args.get("user")
     if not user:
-        return redirect(url_for(login))
+        return redirect(url_for('login'))
     bookings = Booking.query.order_by(Booking.start_time).all()
     return render_template("index.html", bookings=bookings)
 
