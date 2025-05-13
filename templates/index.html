@@ -36,6 +36,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const userEmail = "{{ user_email }}";
+      console.log("Logged in as: ", userEmail)
       const calendarEl = document.getElementById('calendar');
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -48,7 +49,7 @@
             alert("You can only delete your own bookings.");
             return;
           }
-          
+
           if (confirm(`Remove booking: ${info.event.title}?`)) {
             fetch(`/remove/${booking.id}`, { method: 'POST' })
               .then(res => {

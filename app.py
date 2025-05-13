@@ -28,7 +28,7 @@ def index():
     if not user:
         return redirect(url_for('login'))
     bookings = Booking.query.order_by(Booking.start_time).all()
-    return render_template("index.html", bookings=bookings)
+    return render_template("index.html", bookings=bookings, user_email=user)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
