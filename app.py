@@ -22,6 +22,7 @@ class Booking(db.Model):
 
 @app.route('/')
 def index():
+    user = request.args.get("user")
     bookings = Booking.query.order_by(Booking.start_time).all()
     return render_template("index.html", bookings=bookings)
 
@@ -37,6 +38,9 @@ def book():
     email = request.form['email']
     start = datetime.fromisoformat(request.form['start'])
     end = datetime.fromisoformat(request.form['end'])
+    purpose = request.form['usage']
+    color = request.form['color']
+
 
     # Rule 1: Overlap Check
     overlaps = Booking.query.filter(
@@ -67,7 +71,24 @@ def book():
             if start < cooldown_end:
                 return "Cooldown in progress. Try later.", 400
 
-    booking = Booking(email=email, start_time=start, end_time=end)
+    booking = Booking(email=email, 
+                      start_time=start, 
+                      end_time=end,
+                      purpose=purpose,
+                      color=color)
     db.session.add(booking)
     db.session.commit()
     return redirect(url_for('index', user=email))
+
+@app.route('/remove/<int:booking_id>', methods=['POST'])
+def remove_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    email = request.args.get('user_email') or request.form.get('email')  # depends on frontend
+
+    if booking.email != email:
+        return "Unauthorized", 403
+
+    db.session.delete(booking)
+    db.session.commit()
+    return '', 204  # No Content
+

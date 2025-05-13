@@ -3,29 +3,74 @@
 <head>
   <title>Facility Booking</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
 </head>
 <body>
   <h1>Facility Booking</h1>
 
-  <form method="POST" action="/login">
-    <input type="email" name="email" placeholder="Enter email">
-    <button type="submit">Login</button>
-  </form>
-
   <form method="POST" action="/book">
-    <input type="email" name="email" placeholder="Your email">
+
+    <label>Project Group:</label>
+    <input type="text" name="group" placeholder="Project Group">
+
+    <label>Start Time:</label>
     <input type="datetime-local" name="start">
+
+    <label>End Time:</label>
     <input type="datetime-local" name="end">
+
+    <label>Purpose of Usage:</label>
+    <input type="text" name="usage">
+
+    <label>Color:</label>
+    <input type="color" name="color">
+
     <button type="submit">Book</button>
   </form>
 
   <h2>Current Bookings:</h2>
-  <ul>
-    {% for b in bookings %}
-      <li>
-        {{ b.start_time }} - {{ b.end_time }} | {{ b.email }}
-      </li>
-    {% endfor %}
-  </ul>
+  <div id="calendar"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userEmail = "{{ user_email }}";
+      const calendarEl = document.getElementById('calendar');
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        editable: false,
+        eventClick: function(info) {
+          const booking = info.event.extendedProps;
+          if (confirm(`Remove booking: ${info.event.title}?`)) {
+            fetch(`/remove/${booking.id}`, { method: 'POST' })
+              .then(res => {
+                if (res.ok) {
+                  info.event.remove();
+                } else {
+                  alert("Failed to remove booking.");
+                }
+              });
+          }
+        },
+        events: [
+          {% for b in bookings %}
+          {
+            id: {{ b.id }},
+            title: '{{ b.purpose }} ({{ b.behalf_of }})',
+            start: '{{ b.start_time.isoformat() }}',
+            end: '{{ b.end_time.isoformat() }}',
+            backgroundColor: '{{ b.color }}',
+            extendedProps: {
+              email: '{{ b.email }}',
+              id: {{ b.id }}
+            }
+          },
+          {% endfor %}
+        ]
+      });
+
+      calendar.render();
+    });
+  </script>
 </body>
 </html>
