@@ -26,7 +26,7 @@ class Booking(db.Model):
 def index():
     user = request.args.get("user")
     bookings = Booking.query.order_by(Booking.start_time).all()
-    return render_template("index.html", bookings=bookings)
+    return render_template("login.html", bookings=bookings)
 
 @app.route('/login', methods=['POST'])
 def login():
