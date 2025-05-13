@@ -19,6 +19,8 @@ class Booking(db.Model):
     email = db.Column(db.String, db.ForeignKey('user.email'))
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+    purpose = db.Column(db.String)
+    color = db.Column(db.String)
 
 @app.route('/')
 def index():
