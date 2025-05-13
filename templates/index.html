@@ -10,6 +10,8 @@
   <h1>Facility Booking</h1>
 
   <form method="POST" action="/book">
+    <label>Email:</label>
+    <input type="email" name="email" placeholder="{{ user_email }}">
 
     <label>Project Group:</label>
     <input type="text" name="group" placeholder="Project Group">
@@ -41,6 +43,12 @@
         editable: false,
         eventClick: function(info) {
           const booking = info.event.extendedProps;
+
+          if (booking.email !== userEmail) {
+            alert("You can only delete your own bookings.");
+            return;
+          }
+          
           if (confirm(`Remove booking: ${info.event.title}?`)) {
             fetch(`/remove/${booking.id}`, { method: 'POST' })
               .then(res => {
