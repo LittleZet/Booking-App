@@ -25,15 +25,19 @@ class Booking(db.Model):
 @app.route('/')
 def index():
     user = request.args.get("user")
+    if not user:
+        return redirect(url_for(login))
     bookings = Booking.query.order_by(Booking.start_time).all()
-    return render_template("login.html", bookings=bookings)
+    return render_template("index.html", bookings=bookings)
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
-    email = request.form['email']
-    if User.query.get(email):
-        return redirect(url_for('index', user=email))
-    return "Unauthorized email", 403
+    if request.method == 'POST':
+        email = request.form['email']
+        if User.query.get(email):
+            return redirect(url_for('index', user=email))
+        return "Unauthorized email", 403
+    return render_template("login.html")
 
 @app.route('/book', methods=['POST'])
 def book():
